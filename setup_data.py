@@ -1,5 +1,4 @@
 from model import BaseSequenceLabelingSplitImpExp
-from run_discourse_parsing import load_data
 import torch
 import pandas as pd
 import gensim
@@ -74,9 +73,8 @@ def load_pretrained_model():
                                         parameters['weight_decay'] = weight_decay
                                         parameters_list.append(parameters)
 
-    dev_X, _, dev_X_eos_list, dev_Y, train_X, train_X_label_length_list, train_X_eos_list, train_Y, test_X, _, test_X_eos_list, test_Y = load_data()
-    word_embedding_dimension = test_X[0].size(-1)
-    number_class = test_Y[0].size(-1)
+    word_embedding_dimension = 343
+    number_class = 4
 
     # Model
     model = BaseSequenceLabelingSplitImpExp(word_embedding_dimension, number_class,
