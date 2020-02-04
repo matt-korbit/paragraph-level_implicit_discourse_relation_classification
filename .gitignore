@@ -1,3 +1,4 @@
+data/preprocess/stanford-postagger-2018-10-16/*
 *.pkl
 *.pt
 *.bin
