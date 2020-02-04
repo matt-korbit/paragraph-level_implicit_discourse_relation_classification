@@ -1,4 +1,4 @@
-from setup_data import load_pretrained_model, load_korbit_test_set
+from setup_data import load_pretrained_model
 import pandas as pd
 
 if __name__ == "__main__":
@@ -7,5 +7,4 @@ if __name__ == "__main__":
 
     # Load pretrained model
     model = load_pretrained_model()
-
 
