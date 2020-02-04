@@ -101,7 +101,7 @@ def accumulate(iterator):
 ####################################################
 ### Hacky methods from the original script below ###
 ####################################################
-model = gensim.models.KeyedVectors.load_word2vec_format('../resource/GoogleNews-vectors-negative300.bin', binary=True)
+model = gensim.models.KeyedVectors.load_word2vec_format('data/resource/GoogleNews-vectors-negative300.bin', binary=True)
 stanford_dir = 'data/resource/stanford-postagger-2018-10-16/'
 modelfile = stanford_dir + 'models/english-left3words-distsim.tagger'
 jarfile = stanford_dir + 'stanford-postagger.jar'
