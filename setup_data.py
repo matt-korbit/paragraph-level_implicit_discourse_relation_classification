@@ -5,18 +5,23 @@ import gensim
 import nltk
 from nltk import word_tokenize
 from nltk.tag import StanfordPOSTagger,StanfordNERTagger
-
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
 def process_dataset():
+    logging.info("Loading data.")
     raw_df = pd.read_pickle("data/korbit/std_test27.pkl")
 
     # Process input samples. Input size: 1 x num_words x word_embedding_dimension (343)
+    logging.info("Processing input samples.")
     raw_df['para_embedding'] = raw_df['edus'].map(process_sample)
 
     # EOS: list containing length of edus for this sample
+    logging.info("Processing EOS symbols.")
     raw_df['eos'] = raw_df['edus'].map(lambda edus : [x for x in accumulate([word_tokenize(edu) for edu in edus])])
 
     # Target size: len(discourse_list) x 4 -- one-hot encoding
+    logging.info("Processing relation targets.")
     raw_df['target'] = raw_df['relations'].map(process_target)
     raw_df.to_pickle("data/korbit/std_test27_proc.pkl")
 
