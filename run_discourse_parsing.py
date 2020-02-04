@@ -394,6 +394,8 @@ if __name__ == "__main__":
                                                     batch_size = parameters['batch_size'], n_epochs = parameters['nb_epoch'], optimizer_type = parameters['optimizer_type'], 
                                                     weight_decay = parameters['weight_decay'], alpha = 1, use_scheduler = False)
             
+
+            torch.save(best_model.state_dict(), 'pre-trained_model/result/model/pdtb_implicit_moreexplicit_discourse_withoutAltLex_paragraph_multilabel_addposnerembedding_BiLSTMCRFSplitImpExp_rand_viterbi_eachiterationmodel_hidden300_addoutputdropout_exp2.pt')
             print '----------------------------------------------------'
             print 'Experiment Iteration ' +  str(iteration+1) + ' Evaluation: #test_samples= ' + str(len(test_Y))
             print 'Evaluate on Explicit/Implicit discourse relation'

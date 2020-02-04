@@ -13,11 +13,11 @@ import gensim
 import nltk
 from nltk.tag import StanfordPOSTagger,StanfordNERTagger
 from nltk.parse.stanford import StanfordDependencyParser
-from nltk.tokenize import StanfordTokenizer
+from nltk.tokenize.stanford import StanfordTokenizer
 
 
 # Load Google pretrained word2vec
-model = gensim.models.Word2Vec.load_word2vec_format('../resource/GoogleNews-vectors-negative300.bin', binary=True)
+model = gensim.models.KeyedVectors.load_word2vec_format('../resource/GoogleNews-vectors-negative300.bin', binary=True)
 # Load Glove pretrained word2vec
 #model = gensim.models.Word2Vec.load_word2vec_format('../resource/glove.840B.300d.w2vformat.txt', binary=False)
 
@@ -831,5 +831,5 @@ pdtb_data['train_Y'] = train_Y
 pdtb_data['test_X'] = test_X
 pdtb_data['test_Y'] = test_Y
 
-outfile = open('data/pdtb_implicit_moreexplicit_discourse_withoutAltLex_paragraph_multilabel_addposnerembedding.pt','w')
+outfile = open('../pdtb_implicit_moreexplicit_discourse_withoutAltLex_paragraph_multilabel_addposnerembedding.pt','w')
 torch.save(pdtb_data,outfile)

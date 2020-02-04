@@ -1,1 +1,5 @@
+*.pkl
+*.pt
+*.bin
+*.pyc
 data/preprocess/dataset/pdtb_v2/*
