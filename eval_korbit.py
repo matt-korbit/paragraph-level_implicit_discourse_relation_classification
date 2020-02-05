@@ -43,7 +43,7 @@ if __name__ == "__main__":
     label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration/attribution"}
     predictions = []
     pred_labels = []
-    targets = test['target'].map(lambda x : - x.numpy()).tolist()  # Fix
+    targets = test['target'].map(lambda x : x.argmin()).tolist()
     with torch.no_grad():
         for index, row in tqdm(test.iterrows(), total=len(test.index)):
             input_vecs = row['para_embedding'].cuda()
@@ -51,7 +51,8 @@ if __name__ == "__main__":
             eos = row['eos']
 
             pred = model(input_vecs, eos, target)
-            predictions.append(pred.cpu().numpy())
-            pred_labels.append(label_map[pred.argmax()])
+            pred_label = pred.argmax().item()
+            predictions.append(pred_label)
+            pred_labels.append(label_map[pred_label])
 
     print_evaluation_result((predictions, targets))
