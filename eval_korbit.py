@@ -4,6 +4,7 @@ from tqdm import tqdm
 from pre_trained_model.evaluate_stored_model import print_evaluation_result
 from model import BaseSequenceLabelingSplitImpExp
 
+
 def load_pretrained_model():
     parameters = {
         'nb_epoch': 50,
@@ -43,16 +44,18 @@ if __name__ == "__main__":
     label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration/attribution"}
     predictions = []
     pred_labels = []
-    targets = test['target'].map(lambda x : x.argmin()).tolist()
+    targets = test['target'].map(lambda tgs : [tg.argmin().item() for tg in tgs]).tolist()
+    targets = [item for sublist in targets for item in sublist]  # Flatten list
     with torch.no_grad():
         for index, row in tqdm(test.iterrows(), total=len(test.index)):
             input_vecs = row['para_embedding'].cuda()
             target = row['target'].cuda()
             eos = row['eos']
 
-            pred = model(input_vecs, eos, target)
-            pred_label = pred.argmax().item()
-            predictions.append(pred_label)
-            pred_labels.append(label_map[pred_label])
+            outputs = model(input_vecs, eos, target)
+            ex_labels = [pred.argmax().item() for pred in outputs]
+            predictions.append(ex_labels)
+            pred_labels.append([label_map[pred_label] for pred_label in ex_labels])
 
+    predictions = [item for sublist in predictions for item in sublist]  # Flatten list
     print_evaluation_result((predictions, targets))
