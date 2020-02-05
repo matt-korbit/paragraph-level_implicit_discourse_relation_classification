@@ -1,4 +1,3 @@
-from model import BaseSequenceLabelingSplitImpExp
 import torch
 import pandas as pd
 import gensim
@@ -44,56 +43,6 @@ def process_target(discourse_list):
     target_indices = torch.tensor([label_map[target] for target in discourse_list]).view(len(discourse_list), -1)
     y = torch.zeros(len(discourse_list), 4).scatter_(dim=1, index=target_indices, value=1.0)
     return y
-
-
-def load_pretrained_model():
-    batch_size_list = [128]  # fixed 128 > 64 > 256
-    hidden_size_list = [300]  # 600>300>100
-    dropout_list = [5]
-    l2_reg_list = [0]  # fixed 0
-    nb_epoch_list = [50]
-    encoder_sentence_embedding_type_list = ['max']  # max > mean > last
-    sentence_zero_inithidden_list = [False]
-    optimizer_type_list = ['adam']  # adam > adagrad > other
-    num_layers_list = [1]
-    parameters_list = []
-    for num_layers in num_layers_list:
-        for sentence_embedding_type in encoder_sentence_embedding_type_list:
-            for sentence_zero_inithidden in sentence_zero_inithidden_list:
-                for batch_size in batch_size_list:
-                    for optimizer_type in optimizer_type_list:
-                        for hidden_size in hidden_size_list:
-                            for nb_epoch in nb_epoch_list:
-                                for weight_decay in l2_reg_list:
-                                    for dropout in dropout_list:
-                                        parameters = {}
-                                        parameters['nb_epoch'] = nb_epoch
-                                        parameters['sentence_embedding_type'] = sentence_embedding_type
-                                        parameters['sentence_zero_inithidden'] = sentence_zero_inithidden
-                                        parameters['num_layers'] = num_layers
-                                        parameters['batch_size'] = batch_size
-                                        parameters['hidden_size'] = hidden_size
-                                        parameters['optimizer_type'] = optimizer_type
-                                        parameters['dropout'] = dropout * 0.1
-                                        parameters['weight_decay'] = weight_decay
-                                        parameters_list.append(parameters)
-
-    word_embedding_dimension = 343
-    number_class = 4
-
-    # Model
-    model = BaseSequenceLabelingSplitImpExp(word_embedding_dimension, number_class,
-                                            hidden_size=parameters['hidden_size'],
-                                            sentence_embedding_type=parameters['sentence_embedding_type'],
-                                            sentence_zero_inithidden=parameters['sentence_zero_inithidden'],
-                                            cross_attention=False, attention_function='feedforward', NTN_flag=False,
-                                            num_layers=parameters['num_layers'], dropout=parameters['dropout'])
-
-    # Load weights
-    pretrained_weights = torch.load('pre_trained_model/result/model/pdtb_implicit_moreexplicit_discourse_withoutAltLex_paragraph_multilabel_addposnerembedding_BiLSTMCRFSplitImpExp_rand_viterbi_eachiterationmodel_hidden300_addoutputdropout_exp2.pt')
-    model.load_state_dict(pretrained_weights)
-
-    return model.cuda()
 
 
 def accumulate(iterator):
