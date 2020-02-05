@@ -59,3 +59,8 @@ if __name__ == "__main__":
 
     predictions = [item for sublist in predictions for item in sublist]  # Flatten list
     print_evaluation_result((predictions, targets))
+
+    # Save results
+    test['predictions'] = pd.Series(predictions)
+    test.drop(columns=['para_embedding', 'target', 'eos'])
+    test.to_pickle("data/korbit/std_test27_preds.pkl")
