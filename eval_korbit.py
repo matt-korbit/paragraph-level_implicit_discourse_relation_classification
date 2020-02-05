@@ -1,7 +1,7 @@
 import torch
 import pandas as pd
 from tqdm import tqdm
-from pre_trained_model.evaluate_stored_model import evaluate
+from pre_trained_model.evaluate_stored_model import print_evaluation_result
 from model import BaseSequenceLabelingSplitImpExp
 
 def load_pretrained_model():
@@ -43,14 +43,15 @@ if __name__ == "__main__":
     label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration/attribution"}
     predictions = []
     pred_labels = []
-    targets = test['target'].map(lambda x : x.numpy()).tolist()
-    for index, row in tqdm(test.iterrows(), total=len(test.index)):
-        input_vecs = row['para_embedding'].cuda()
-        target = row['target'].cuda()
-        eos = row['eos']
+    targets = test['target'].map(lambda x : - x.numpy()).tolist()  # Fix
+    with torch.no_grad():
+        for index, row in tqdm(test.iterrows(), total=len(test.index)):
+            input_vecs = row['para_embedding'].cuda()
+            target = row['target'].cuda()
+            eos = row['eos']
 
-        pred = model(input_vecs, eos, target)
-        predictions.append(pred.item())
-        pred_labels.append(label_map[pred.argmax()])
+            pred = model(input_vecs, eos, target)
+            predictions.append(pred.cpu().numpy())
+            pred_labels.append(label_map[pred.argmax()])
 
-    evaluate()
+    print_evaluation_result((predictions, targets))
