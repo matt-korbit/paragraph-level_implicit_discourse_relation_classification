@@ -90,7 +90,7 @@ def load_pretrained_model():
                                             num_layers=parameters['num_layers'], dropout=parameters['dropout'])
 
     # Load weights
-    pretrained_weights = torch.load('pre-trained_model/result/model/pdtb_implicit_moreexplicit_discourse_withoutAltLex_paragraph_multilabel_addposnerembedding_BiLSTMCRFSplitImpExp_rand_viterbi_eachiterationmodel_hidden300_addoutputdropout_exp2.pt')
+    pretrained_weights = torch.load('pre_trained_model/result/model/pdtb_implicit_moreexplicit_discourse_withoutAltLex_paragraph_multilabel_addposnerembedding_BiLSTMCRFSplitImpExp_rand_viterbi_eachiterationmodel_hidden300_addoutputdropout_exp2.pt')
     model.load_state_dict(pretrained_weights)
 
     return model.cuda()
