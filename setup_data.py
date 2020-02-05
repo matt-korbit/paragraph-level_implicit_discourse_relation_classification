@@ -41,7 +41,7 @@ def process_sample(edus):
 def process_target(discourse_list):
     """Process the raw discourse target list into a one-hot encoding matrix."""
     label_map = {"sequence": 0, "comparison": 1, "cause": 2, "elaboration": 3, "attribution": 3}
-    target_indices = torch.tensor([label_map[target] for target in discourse_list]).view(len(discourse_list), -1.0)
+    target_indices = torch.tensor([label_map[target] for target in discourse_list]).view(len(discourse_list), -1)
     y = torch.zeros(len(discourse_list), 4).scatter_(dim=1, index=target_indices, value=1.0)
     return y
 
