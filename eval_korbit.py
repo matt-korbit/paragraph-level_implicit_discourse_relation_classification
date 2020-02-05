@@ -40,6 +40,7 @@ if __name__ == "__main__":
 
     # Load pretrained model
     model = load_pretrained_model()
+    model.eval()
 
     label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration/attribution"}
     predictions = []
