@@ -43,7 +43,7 @@ if __name__ == "__main__":
     model.eval()
 
     label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration/attribution"}
-    outputs = []  # Raw model outputs
+    output_list = []  # Raw model outputs
     pred_labels = []  # The one-hot encoding of argmax prediction
     predictions = []  # The raw string predictions
     with torch.no_grad():
@@ -53,8 +53,8 @@ if __name__ == "__main__":
             eos = row['eos']
 
             output = model(input_vecs, eos, target)
-            outputs.append(output.cpu().numpy())
-            pred_label = [pred.argmax().item() for pred in outputs]
+            output_list.append(output.cpu().numpy())
+            pred_label = [pred.argmax().item() for pred in output]
             pred_labels.append(pred_label)
             predictions.append([label_map[pred] for pred in pred_label])
 
