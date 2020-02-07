@@ -60,8 +60,8 @@ if __name__ == "__main__":
 
     true_labels = test['target'].map(lambda tgs : [tg.abs().argmax().item() for tg in tgs]).tolist()
     flat_true_labels = [item for sublist in true_labels for item in sublist]  # Flatten list
-    flat_predictions = [item for sublist in predictions for item in sublist]  # Flatten list
-    print_evaluation_result((flat_predictions, flat_true_labels))
+    flat_pred_labels = [item for sublist in pred_labels for item in sublist]  # Flatten list
+    print_evaluation_result((flat_pred_labels, flat_true_labels))
 
     # Save results
     test['outputs'] = pd.Series(output_list)
