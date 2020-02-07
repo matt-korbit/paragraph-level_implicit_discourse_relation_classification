@@ -36,7 +36,7 @@ def load_pretrained_model():
 
 if __name__ == "__main__":
     # Load Korbit data
-    test = pd.read_pickle("data/korbit/std_test27_proc.pkl")
+    test = pd.read_csv("data/korbit/relations_test_new.csv")
 
     # Load pretrained model
     model = load_pretrained_model()

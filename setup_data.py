@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(mes
 
 def process_dataset(test_file):
     logging.info("Loading data.")
-    raw_df = pd.read_pickle("data/korbit/{}".format(test_file))
+    raw_df = pd.read_csv("data/korbit/{}.csv".format(test_file))
 
     # Process input samples. Input size: 1 x num_words x word_embedding_dimension (343)
     logging.info("Processing input samples.")
@@ -23,7 +23,7 @@ def process_dataset(test_file):
     # Target size: len(discourse_list) x 4 -- one-hot encoding
     logging.info("Processing relation targets.")
     raw_df['target'] = raw_df['relations'].map(process_target)
-    raw_df.to_pickle("data/korbit/std_test27_proc.pkl")
+    raw_df.to_pickle("data/korbit/{}_proc.pkl".format(test_file))
 
 
 def process_sample(edus):
@@ -146,6 +146,6 @@ def tansfer_word2vec(input_list,posner_flag=True,k=300):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_file', type=str, default='relations_test_new.csv')
+    parser.add_argument('--test_file', type=str, default='relations_test_new')
     args = parser.parse_args()
     process_dataset(args.test_file)
