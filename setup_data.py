@@ -26,7 +26,7 @@ def process_dataset(test_file):
 
     # Target size: len(discourse_list) x 4 -- one-hot encoding
     logging.info("Processing relation targets.")
-    raw_df['target'] = raw_df.apply(process_target, axis=0)
+    raw_df['target'] = raw_df.apply(process_target, axis=1)
     raw_df.to_pickle("data/korbit/{}_proc.pkl".format(test_file))
 
 
