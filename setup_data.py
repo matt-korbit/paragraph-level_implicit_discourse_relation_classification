@@ -4,12 +4,13 @@ import gensim
 import nltk
 from nltk import word_tokenize
 from nltk.tag import StanfordPOSTagger,StanfordNERTagger
+import argparse
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
-def process_dataset():
+def process_dataset(test_file):
     logging.info("Loading data.")
-    raw_df = pd.read_pickle("data/korbit/std_test27.pkl")
+    raw_df = pd.read_pickle("data/korbit/{}".format(test_file))
 
     # Process input samples. Input size: 1 x num_words x word_embedding_dimension (343)
     logging.info("Processing input samples.")
@@ -144,4 +145,7 @@ def tansfer_word2vec(input_list,posner_flag=True,k=300):
 
 
 if __name__ == "__main__":
-    process_dataset()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test_file', type=str, default='relations_test_new.csv')
+    args = parser.parse_args()
+    process_dataset(args.test_file)
