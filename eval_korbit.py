@@ -36,32 +36,38 @@ def load_pretrained_model():
 
 if __name__ == "__main__":
     # Load Korbit data
-    test = pd.read_csv("data/korbit/relations_test_new.csv")
+    test = pd.read_pickle("data/korbit/relations_test_new_proc.pkl")
 
     # Load pretrained model
     model = load_pretrained_model()
     model.eval()
 
     label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration/attribution"}
-    predictions = []
-    pred_labels = []
-    targets = test['target'].map(lambda tgs : [tg.argmin().item() for tg in tgs]).tolist()
-    targets = [item for sublist in targets for item in sublist]  # Flatten list
+    outputs = []  # Raw model outputs
+    pred_labels = []  # The one-hot encoding of argmax prediction
+    predictions = []  # The raw string predictions
     with torch.no_grad():
         for index, row in tqdm(test.iterrows(), total=len(test.index)):
             input_vecs = row['para_embedding'].cuda()
             target = row['target'].cuda()
             eos = row['eos']
 
-            outputs = model(input_vecs, eos, target)
-            ex_labels = [pred.argmax().item() for pred in outputs]
-            predictions.append(ex_labels)
-            pred_labels.append([label_map[pred_label] for pred_label in ex_labels])
+            output = model(input_vecs, eos, target)
+            outputs.append(output.cpu().numpy())
+            pred_label = [pred.argmax().item() for pred in outputs]
+            pred_labels.append(pred_label)
+            predictions.append([label_map[pred] for pred in pred_label])
 
-    predictions = [item for sublist in predictions for item in sublist]  # Flatten list
-    print_evaluation_result((predictions, targets))
+    true_labels = test['target'].map(lambda tgs : [tg.abs().argmax().item() for tg in tgs]).tolist()
+    flat_true_labels = [item for sublist in true_labels for item in sublist]  # Flatten list
+    flat_predictions = [item for sublist in predictions for item in sublist]  # Flatten list
+    print_evaluation_result((flat_predictions, flat_true_labels))
 
     # Save results
+    test['outputs'] = pd.Series(outputs)
+    test['pred_labels'] = pd.Series(pred_labels)
     test['predictions'] = pd.Series(predictions)
-    test.drop(columns=['para_embedding', 'target', 'eos'])
-    test.to_pickle("data/korbit/std_test27_preds.pkl")
+    test['target'] = test['target'].map(lambda t: t.numpy())
+
+    test.drop(columns=['para_embedding', 'eos'])
+    test.to_pickle("data/korbit/relations_test_new_preds.pkl")
