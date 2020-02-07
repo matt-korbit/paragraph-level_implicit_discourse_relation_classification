@@ -64,7 +64,7 @@ if __name__ == "__main__":
     print_evaluation_result((flat_predictions, flat_true_labels))
 
     # Save results
-    test['outputs'] = pd.Series(outputs)
+    test['outputs'] = pd.Series(output_list)
     test['pred_labels'] = pd.Series(pred_labels)
     test['predictions'] = pd.Series(predictions)
     test['target'] = test['target'].map(lambda t: t.numpy())
