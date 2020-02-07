@@ -6,11 +6,15 @@ from nltk import word_tokenize
 from nltk.tag import StanfordPOSTagger,StanfordNERTagger
 import argparse
 import logging
+import ast
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
 def process_dataset(test_file):
     logging.info("Loading data.")
     raw_df = pd.read_csv("data/korbit/{}.csv".format(test_file))
+    raw_df.drop(columns='Unnamed: 0', inplace=True)
+    for col in ['edus', 'relations', 'implicit']:
+        raw_df[col] = raw_df[col].apply(ast.literal_eval)
 
     # Process input samples. Input size: 1 x num_words x word_embedding_dimension (343)
     logging.info("Processing input samples.")
@@ -22,7 +26,7 @@ def process_dataset(test_file):
 
     # Target size: len(discourse_list) x 4 -- one-hot encoding
     logging.info("Processing relation targets.")
-    raw_df['target'] = raw_df['relations'].map(process_target)
+    raw_df['target'] = raw_df.apply(process_target, axis=0)
     raw_df.to_pickle("data/korbit/{}_proc.pkl".format(test_file))
 
 
@@ -38,11 +42,20 @@ def process_sample(edus):
     return para_embedding
 
 
-def process_target(discourse_list):
-    """Process the raw discourse target list into a one-hot encoding matrix."""
-    label_map = {"sequence": 0, "comparison": 1, "cause": 2, "elaboration": 3, "attribution": 3}
-    target_indices = torch.tensor([label_map[target] for target in discourse_list]).view(len(discourse_list), -1)
-    y = torch.zeros(len(discourse_list), 4).scatter_(dim=1, index=target_indices, value=-1.0)
+def process_target(row):
+    """
+    Process the raw discourse target list into a one-hot encoding matrix.
+    -1 indicates an explicit relation, 1 indicates implicit relation.
+    """
+    label_map = {"sequence": 0, "comparison": 1, "cause": 2, "elaboration": 3}
+    discourse_list = row['relations']
+    implicit_marker_list = row['implicit']
+
+    # Use scatter to accomplish the desired one-hot encoding.
+    # target_indices tells us where to put the label. src tells us what value {-1, 1} to put.
+    target_indices = torch.tensor([label_map[target] for target in discourse_list]).view(-1, 1)
+    src = torch.tensor(map(lambda x : 1 if x == 'yes' else -1, implicit_marker_list)).view(-1, 1).float()
+    y = torch.zeros(len(discourse_list), 4).scatter_(dim=1, index=target_indices, src=src)
     return y
 
 
