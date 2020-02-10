@@ -42,7 +42,7 @@ if __name__ == "__main__":
     model = load_pretrained_model()
     model.eval()
 
-    label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration/attribution"}
+    label_map = {0: "sequence", 1: "comparison", 2: "cause", 3: "elaboration"}
     output_list = []  # Raw model outputs
     pred_labels = []  # The one-hot encoding of argmax prediction
     predictions = []  # The raw string predictions
@@ -66,8 +66,9 @@ if __name__ == "__main__":
     # Save results
     test['outputs'] = pd.Series(output_list)
     test['pred_labels'] = pd.Series(pred_labels)
+    test['true_labels'] = pd.Series(true_labels)
     test['predictions'] = pd.Series(predictions)
     test['target'] = test['target'].map(lambda t: t.numpy())
 
-    test.drop(columns=['para_embedding', 'eos'])
+    test.drop(columns=['para_embedding', 'eos'], inplace=True)
     test.to_pickle("data/korbit/relations_test_new_preds.pkl")
